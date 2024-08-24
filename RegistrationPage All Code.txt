@@ -1,0 +1,1658 @@
+<%@ Page Language="C#" AutoEventWireup="true" UnobtrusiveValidationMode="none" CodeBehind="RegistrationPage.aspx.cs" Inherits="RegistrationForm.RegistrationPage" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>Registration Form</title>
+    <style>
+        .dropdown-container {
+            display: flex;
+            align-items: center;
+            width: 300px; 
+        }
+
+        .dropdown-button {
+            cursor: pointer;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            text-align: left;
+            margin-left: 10px; 
+            flex: 1; 
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            z-index: 1;
+            width: 100%;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .dropdown-content input {
+            margin-right: 10px;
+        }
+
+        .show {
+            display: block;
+        }
+    </style>
+    <script type="text/javascript">
+
+        function allowOnlyLetters(event) {
+            var charCode = event.which ? event.which : event.keyCode;
+            if ([8, 9, 27, 13].indexOf(charCode) !== -1 ||
+                (charCode === 65 && (event.ctrlKey === true || event.metaKey === true)) ||
+                (charCode === 67 && (event.ctrlKey === true || event.metaKey === true)) ||
+                (charCode === 88 && (event.ctrlKey === true || event.metaKey === true)) ||
+                (charCode === 86 && (event.ctrlKey === true || event.metaKey === true)) ||
+                (charCode >= 35 && charCode <= 39)) {
+                return true;
+            }
+            return charCode >= 65 && charCode <= 90 || charCode >= 97 && charCode <= 122;
+        }
+        function ValidateGender(sender, args) {
+            args.IsValid = document.getElementById('<%= rbtnM.ClientID %>').checked || document.getElementById('<%= rbtnF.ClientID %>').checked;
+        }
+        function ValidateHobbies(sender, args) {
+            args.IsValid = document.getElementById('<%= chk1.ClientID %>').checked || document.getElementById('<%= chk2.ClientID %>').checked || document.getElementById('<%= chk3.ClientID %>').checked;
+        }
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            var input = evt.target.value;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+            if (input.length >= 10 && charCode !== 8 && charCode !== 46) {
+                return false;
+            }
+            return true;
+        }
+        function isNumberKeyy(evt) {
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            var input = evt.target.value;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+            if (input.length >= 2 && charCode !== 8 && charCode !== 46) {
+                return false;
+            }
+            return true;
+        }
+        function validateFile() {
+            var fileInput = document.getElementById('<%= fileUploadImage.ClientID %>');
+            var filePath = fileInput.value;
+            var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+
+            if (!allowedExtensions.exec(filePath)) {
+                alert('Invalid file type. Only .jpg, .jpeg, and .png are allowed.');
+                fileInput.value = '';
+                return false;
+            }
+            return true;
+        }
+
+        function validateForm() {
+            return validateFile();
+        }
+
+        function toggleDropdown() {
+            var content = document.getElementById('DropdownContent');
+            content.classList.toggle('show');
+        }
+
+        //function closeDropdown(event) {
+        //    if (!event.target.matches('.dropdown-button')) {
+        //        var dropdowns = document.getElementsByClassName('dropdown-content');
+        //        for (var i = 0; i < dropdowns.length; i++) {
+        //            var openDropdown = dropdowns[i];
+        //            if (openDropdown.classList.contains('show')) {
+        //                openDropdown.classList.remove('show');
+        //            }
+        //        }
+        //    }
+        //}
+
+        window.onclick = closeDropdown;
+    </script>
+</head>
+<body>
+    <form id="form1" runat="server" >
+        <div>
+            <asp:ValidationSummary ID="ValidationSummary1" runat="server" ShowMessageBox="True" ShowSummary="False" />
+            <asp:Label Id="UserID" runat="server" Visible="false" Text="Label"></asp:Label>
+            <div style="text-align: right;">
+            <asp:Label ID="lblWelcome" runat="server" Text=""></asp:Label>
+            <br />
+            <asp:Button ID="btnLogout" runat="server" Text="Logout" OnClick="btnLogout_Click" />
+            <asp:Button ID="btnLogIn" runat="server" Text="Log In" OnClick="btnLogIn_Click" />
+        </div>
+            <table>
+                <tr>
+                    <td><asp:Label ID="lbl1" runat="server" Text="First Name: "></asp:Label></td>
+                    <td>
+                        <asp:TextBox ID="txtFirstName" runat="server" ToolTip="Please Provide your first name" onkeypress="return allowOnlyLetters(event)"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ErrorMessage="Please enter First Name" ValidationGroup="vgSubmit" ControlToValidate="txtFirstName">Required</asp:RequiredFieldValidator>
+                    </td>
+                </tr>
+                <tr>
+                    <td><asp:Label ID="lbl2" runat="server" Text="Last Name: "></asp:Label></td>
+                    <td>
+                        <asp:TextBox ID="txtLastName" runat="server" ToolTip="Please Provide your Last name" onkeypress="return allowOnlyLetters(event)"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="Please enter Last Name" ValidationGroup="vgSubmit" ControlToValidate="txtLastName">Required</asp:RequiredFieldValidator>
+                    </td>
+                </tr>
+                <tr>
+                    <td><asp:Label ID="lbl3" runat="server" Text="User Name: "></asp:Label></td>
+                    <td>
+                        <asp:TextBox ID="txtUname" runat="server" ToolTip="Please Provide your User name"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ErrorMessage="Please enter User Name" ValidationGroup="vgSubmit" ControlToValidate="txtUname">Required</asp:RequiredFieldValidator>
+                    </td>
+                </tr>
+                <tr>
+                    <td><asp:Label ID="lbl4" runat="server" Text="Password: "></asp:Label></td>
+                    <td>
+                        <asp:TextBox ID="txtPass" runat="server" TextMode="Password" ToolTip="Please Provide Password"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator4" runat="server" ControlToValidate="txtPass" ValidationGroup="vgSubmit" ErrorMessage="Please enter Password">Required</asp:RequiredFieldValidator>
+                        <asp:RegularExpressionValidator ID="RegularExpressionValidator3" runat="server" 
+                            ControlToValidate="txtPass" 
+                            ValidationGroup="vgSubmit"
+                            ErrorMessage="Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 lowercase letter, and 1 special character."
+                            ValidationExpression="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$">
+                        </asp:RegularExpressionValidator>
+                    </td>
+                </tr>
+                <tr>
+                    <td><asp:Label ID="lbl5" runat="server" Text="Confirm Password: "></asp:Label></td>
+                    <td>
+                        <asp:TextBox ID="txtCpass" runat="server" TextMode="Password" ToolTip="Please Provide Password"></asp:TextBox>
+                        <asp:CompareValidator ID="CompareValidator1" runat="server" ControlToCompare="txtPass" ControlToValidate="txtCpass" ValidationGroup="vgSubmit" ErrorMessage="Password & Confirm Password Must be Same">Must be same as Password</asp:CompareValidator>
+                    </td>
+                </tr>
+                <tr>
+                    <td><asp:Label ID="lbl6" runat="server" Text="E-mail: "></asp:Label></td>
+                    <td>
+                        <asp:TextBox ID="txtEmail" runat="server"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator5" runat="server" ControlToValidate="txtEmail" ValidationGroup="vgSubmit" ErrorMessage="Please enter E-mail">Required</asp:RequiredFieldValidator>
+                        <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" ControlToValidate="txtEmail" ErrorMessage="Invalid e-mail id" ValidationExpression="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*">Invalid e-mail id</asp:RegularExpressionValidator>
+                    </td>
+                </tr>
+                <tr>
+                    <td><asp:Label ID="lbl7" runat="server" Text="Mobile No.: "></asp:Label></td>
+                    <td>
+                        <asp:TextBox ID="txtMob" runat="server" ToolTip="Please enter Mobile no." onkeypress="return isNumberKey(event)"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator6" runat="server" ControlToValidate="txtMob" ValidationGroup="vgSubmit" ErrorMessage="Please enter Mobile No.">Required</asp:RequiredFieldValidator>
+                        <asp:RegularExpressionValidator ID="RegularExpressionValidator2" runat="server" ControlToValidate="txtMob" ErrorMessage="Invalid mobile number" ValidationExpression="[0-9]{10}">Invalid mobile number</asp:RegularExpressionValidator>
+                    </td>
+                </tr>
+                <tr>
+                    <td><asp:Label ID="lbl8" runat="server" Text="Gender: "></asp:Label></td>
+                    <td>
+                        <asp:RadioButton ID="rbtnM" runat="server" Text="Male" GroupName="GenderMF" />
+                        <asp:RadioButton ID="rbtnF" runat="server" Text="Female" GroupName="GenderMF" />
+                        <asp:CustomValidator ID="CustomValidator1" runat="server" ErrorMessage="Please select Gender" ClientValidationFunction="ValidateGender" ValidationGroup="vgSubmit" ValidateEmptyText="true"></asp:CustomValidator>
+                    </td>
+                </tr>
+                <tr>
+                    <td><asp:Label ID="lbl9" runat="server" Text="Age: "></asp:Label></td>
+                    <td>
+                        <asp:TextBox ID="txtAge" runat="server" onkeypress="return isNumberKeyy(event)"></asp:TextBox>
+                        <asp:RangeValidator ID="RangeValidator1" runat="server" ErrorMessage="Age must be greater than 18 and less than 40" MinimumValue="18" ValidationGroup="vgSubmit" MaximumValue="40" ControlToValidate="txtAge"></asp:RangeValidator>
+                    </td>
+                </tr>
+                <tr>
+                    <td><asp:Label ID="lbl10" runat="server" Text="Course: "></asp:Label></td>
+                    <td>
+                        <asp:DropDownList ID="DropDownList1" runat="server">
+                            <asp:ListItem>Select One</asp:ListItem>
+                            <asp:ListItem>IT</asp:ListItem>
+                            <asp:ListItem>CS</asp:ListItem>
+                            <asp:ListItem>Other</asp:ListItem>
+                        </asp:DropDownList>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator8" runat="server" ValidationGroup="vgSubmit" ControlToValidate="DropDownList1" InitialValue="Select One" ErrorMessage="Please select a course">Required</asp:RequiredFieldValidator>
+                    </td>
+                </tr>
+                <tr>
+                    <td><asp:Label ID="lbl11" runat="server" Text="Hobbies: "></asp:Label></td>
+                    <td>
+                        <asp:CheckBox ID="chk1" runat="server" Text="Cricket" />
+                        <asp:CheckBox ID="chk2" runat="server" Text="Volleyball" />
+                        <asp:CheckBox ID="chk3" runat="server" Text="Other" />
+                        <asp:CustomValidator ID="CustomValidator2" runat="server" ValidationGroup="vgSubmit" ErrorMessage="Please select at least one hobby" ClientValidationFunction="ValidateHobbies" ValidateEmptyText="true"></asp:CustomValidator>
+                    </td>
+                </tr>
+                <tr>
+                    <td><asp:Label ID="lbl13" runat="server" Text="Address: "></asp:Label></td>
+                    <td>
+                        <asp:TextBox ID="txtAddress" runat="server" TextMode="MultiLine" Rows="3" Columns="20" ToolTip="Please Provide your address"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator7" runat="server" ValidationGroup="vgSubmit" ControlToValidate="txtAddress" ErrorMessage="Please enter Address">Required</asp:RequiredFieldValidator>
+                    </td>
+                </tr>
+                <tr>
+                    <td><asp:Label ID="lbl14" runat="server" Text="Image: "></asp:Label></td>
+                    <td>
+                        <asp:FileUpload ID="fileUploadImage" runat="server" AllowMultiple="true" oninput=validateFile() />
+                    </td>
+                </tr>
+                <tr>
+                    <td><asp:Label ID="lblSkills" runat="server" Text="Skills: "></asp:Label></td>
+                    <td>
+                        <div class="dropdown-container">
+                            <div class="dropdown">
+                                <div class="dropdown-button" id="dropdownButton" onclick="toggleDropdown()">
+                                    Select Skills
+                                </div>
+                                <div id="DropdownContent" class="dropdown-content">
+                                    <asp:CheckBoxList ID="CheckBoxList1" runat="server">
+                                        <asp:ListItem Text="Java" Value="Java"></asp:ListItem>
+                                        <asp:ListItem Text="ASP.NET" Value="ASP.NET"></asp:ListItem>
+                                        <asp:ListItem Text="C#" Value="C#"></asp:ListItem>
+                                        <asp:ListItem Text="HTML" Value="HTML"></asp:ListItem>
+                                        <asp:ListItem Text="CSS" Value="CSS"></asp:ListItem>
+                                    </asp:CheckBoxList>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <asp:Button ID="btnSubmit" runat="server" OnClick="btnSubmit_Click" ValidationGroup="vgSubmit" Text="Submit" />
+                        <asp:Button ID="btnUpdate" runat="server" Text="Update" OnClick="btnUpdate_Click1"/>
+                        <asp:Button ID="btnClear" runat="server" Text="Clear" OnClick="btnClear_Click" />
+                        <asp:Button ID="btnCancel" runat="server" Text="Cancel" OnClick="btnCancel_Click" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+                        <asp:Label ID="lblResult" runat="server" Text="" Visible="False"></asp:Label>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" OnRowCommand="onRowCommand1" OnRowEditing="GridView1_RowEditing" OnRowDeleting="OnRowDeleting1" DataKeyNames="UserID" >
+            <Columns>
+                <asp:TemplateField HeaderText="First Name">
+                    <ItemTemplate>
+                        <asp:Label ID="lblFirstName" runat="server" Text='<%# Eval("FirstName") %>'></asp:Label>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Last Name">
+                    <ItemTemplate>
+                        <asp:Label ID="lblLastName" runat="server" Text='<%# Eval("LastName") %>'></asp:Label>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="User Name">
+                    <ItemTemplate>
+                        <asp:Label ID="lblUserName" runat="server" Text='<%# Eval("UserName") %>'></asp:Label>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Email">
+                    <ItemTemplate>
+                        <asp:Label ID="lblEmail" runat="server" Text='<%# Eval("Email") %>'></asp:Label>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Mobile">
+                    <ItemTemplate>
+                        <asp:Label ID="lblMob" runat="server" Text='<%# Eval("Mobile") %>'></asp:Label>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Gender">
+                    <ItemTemplate>
+                        <asp:Label ID="lblGender" runat="server" Text='<%# Eval("Gender") %>'></asp:Label>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Age">
+                    <ItemTemplate>
+                        <asp:Label ID="lblAge" runat="server" Text='<%# Eval("Age") %>'></asp:Label>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Course">
+                    <ItemTemplate>
+                        <asp:Label ID="lblCourse" runat="server" Text='<%# Eval("Course") %>'></asp:Label>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Address">
+                    <ItemTemplate>
+                        <asp:Label ID="lblAdd" runat="server" Text='<%# Eval("Address") %>'></asp:Label>
+                    </ItemTemplate>
+                </asp:TemplateField>
+              <asp:TemplateField HeaderText="Profile Image">
+                <ItemTemplate>
+                    <asp:Literal ID="litProfileImages" runat="server" Text='<%# BindImages(Container.DataItem) %>'></asp:Literal>
+                </ItemTemplate>
+                </asp:TemplateField>
+                        <asp:BoundField DataField="Skills" HeaderText="Skills" />
+                <asp:TemplateField>
+                    <ItemTemplate>
+                        <asp:LinkButton ID="lnkEdit" runat="server" CommandName="Edit" CommandArgument='<%# Eval("UserID") %>'>Edit</asp:LinkButton>
+                        <asp:LinkButton ID="lnkDelete" runat="server" CommandName="Delete" CommandArgument='<%# Eval("UserID") %>'>Delete</asp:LinkButton>
+                    </ItemTemplate>
+                </asp:TemplateField>
+            </Columns>
+        </asp:GridView>
+    </form>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace RegistrationForm
+{
+    public partial class RegistrationPage : System.Web.UI.Page
+    {
+        string ExistingPath = null;
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                InitializePage();
+            }
+        }
+
+        private void InitializePage()
+        {
+            if (Session["UserID"] != null && Session["UserName"] != null)
+            {
+                lblWelcome.Text = "Welcome, " + Session["UserName"].ToString() + "!";
+                lblWelcome.Visible = true;
+                btnUpdate.Visible = false;
+                btnClear.Visible = false;
+                GridView1.Visible = true;
+                btnLogIn.Visible = false;
+            }
+            else
+            {
+                lblWelcome.Visible = false;
+                GridView1.Visible = false;
+                btnUpdate.Visible = false;
+                btnClear.Visible = false;
+                btnLogout.Visible = false;
+                btnLogIn.Visible = true;
+            }
+            GetAllData();
+        }
+
+        protected void btnSubmit_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (txtPass.Text.Trim().Contains(txtUname.Text.Trim()))
+                {
+                    lblResult.Text = "Password cannot contain the username.";
+                    lblResult.Visible = true;
+                    return;
+                }
+
+                List<string> imagePaths = new List<string>();
+
+                if (fileUploadImage.HasFiles)
+                {
+                    foreach (HttpPostedFile uploadedFile in fileUploadImage.PostedFiles)
+                    {
+                        string fileExtension = Path.GetExtension(uploadedFile.FileName).ToLower();
+
+                        if (fileExtension != ".jpg" && fileExtension != ".jpeg" && fileExtension != ".png" && fileExtension != ".gif")
+                        {
+                            lblResult.Text = "Invalid file type. Only .jpg, .jpeg, .png, and .gif are allowed.";
+                            lblResult.Visible = true;
+                            return;
+                        }
+
+                        if (uploadedFile.ContentLength > 2 * 1024 * 1024)
+                        {
+                            lblResult.Text = "File size exceeds the 2 MB limit.";
+                            lblResult.Visible = true;
+                            return;
+                        }
+                        string fileName = Path.GetFileName(uploadedFile.FileName);
+                        string imagePath = "~/Images/" + fileName;
+                        uploadedFile.SaveAs(Server.MapPath(imagePath));
+                        imagePaths.Add(imagePath);
+                    }
+                }
+                string imagePathsString = string.Join(",", imagePaths);
+
+                List<string> selectedSkills = CheckBoxList1.Items.Cast<ListItem>()
+                                          .Where(li => li.Selected)
+                                          .Select(li => li.Text)
+                                          .ToList();
+                string selectedSkillsString = string.Join(",", selectedSkills);
+
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("InsertRegistrationDetails", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@FirstName", txtFirstName.Text.Trim());
+                        cmd.Parameters.AddWithValue("@LastName", txtLastName.Text.Trim());
+                        cmd.Parameters.AddWithValue("@UserName", txtUname.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Password", txtPass.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Email", txtEmail.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Mobile", txtMob.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Gender", rbtnM.Checked ? "M" : (rbtnF.Checked ? "F" : ""));
+                        cmd.Parameters.AddWithValue("@Age", int.TryParse(txtAge.Text.Trim(), out int age) ? (object)age : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Course", DropDownList1.SelectedItem.Text);
+                        cmd.Parameters.AddWithValue("@Hobbies", (chk1.Checked ? chk1.Text + " " : "") + (chk2.Checked ? chk2.Text + " " : "") + (chk3.Checked ? chk3.Text + " " : "").Trim());
+                        cmd.Parameters.AddWithValue("@Address", txtAddress.Text.Trim());
+                        cmd.Parameters.AddWithValue("@ImagePaths", imagePathsString);
+                        cmd.Parameters.AddWithValue("@Skills", selectedSkillsString);
+                        cmd.Parameters.AddWithValue("@CreateDT", DateTime.Now);
+                        if (Session["UserName"] != null)
+                        {
+                            cmd.Parameters.AddWithValue("@Unname", Session["UserName"].ToString());
+                        }
+                        SqlParameter returnValue = new SqlParameter
+                        {
+                            ParameterName = "@ReturnValue",
+                            SqlDbType = SqlDbType.Int,
+                            Direction = ParameterDirection.ReturnValue
+                        };
+                        cmd.Parameters.Add(returnValue);
+                        cmd.ExecuteNonQuery();
+
+                        int result = (int)returnValue.Value;
+                        if (result == 1)
+                        {
+                            Response.Write("<script>alert('User registered successfully!')</script>");
+                        }
+                        else if (result == 2)
+                        {
+                            Response.Write("<script>alert('Duplicate Email found. Please use a different email address.')</script>");
+                        }
+                        else if (result == 3)
+                        {
+                            Response.Write("<script>alert('Duplicate Mobile number found. Please use a different mobile number.')</script>");
+                        }
+                        else if (result == 4)
+                        {
+                            Response.Write("<script>alert('Duplicate User name found. Please use a different User name.')</script>");
+                        }
+                        else
+                        {
+                            Response.Write("<script>alert('Something went wrong, try again.')</script>");
+                        }
+
+                        lblResult.Visible = true;
+
+                        ClearForm();
+                        GetAllData();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                lblResult.Text = "Error: " + ex.Message;
+                lblResult.Visible = true;
+            }
+        }
+
+
+        protected void onRowCommand1(object sender, GridViewCommandEventArgs e)
+        {
+            if (e.CommandName == "Edit")
+            {
+                int userId = Convert.ToInt32(e.CommandArgument);
+                LoadUserData(userId);
+            }
+            else if (e.CommandName == "Delete")
+            {
+                int userId = Convert.ToInt32(e.CommandArgument);
+                DeleteUser(userId);
+            }
+        }
+
+        protected void GridView1_RowEditing(object sender, GridViewEditEventArgs e)
+        {
+            int userId = Convert.ToInt32(GridView1.DataKeys[e.NewEditIndex].Value);
+            LoadUserData(userId);
+        }
+
+        protected void OnRowDeleting1(object sender, GridViewDeleteEventArgs e)
+        {
+            
+        }
+
+        private void GetAllData()
+        {
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString))
+            {
+                SqlDataAdapter da = new SqlDataAdapter("GetAllData", con);
+                da.SelectCommand.CommandType = CommandType.StoredProcedure;
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                GridView1.DataSource = dt;
+                GridView1.DataBind();
+            }
+        }
+
+        private void LoadUserData(int userID)
+        {
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString))
+            {
+                SqlDataAdapter da = new SqlDataAdapter("GetUserData", con);
+                da.SelectCommand.CommandType = CommandType.StoredProcedure;
+                da.SelectCommand.Parameters.AddWithValue("@UserID", userID);
+
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                if (dt.Rows.Count > 0)
+                {
+                    DataRow row = dt.Rows[0];
+                    txtFirstName.Text = row["FirstName"].ToString();
+                    txtLastName.Text = row["LastName"].ToString();
+                    txtUname.Text = row["UserName"].ToString();
+                    txtEmail.Text = row["Email"].ToString();
+                    txtMob.Text = row["Mobile"].ToString();
+                    txtAge.Text = row["Age"].ToString();
+                    txtAddress.Text = row["Address"].ToString();
+                    DropDownList1.SelectedValue = row["Course"].ToString();
+
+                    if (row["Gender"].ToString() == "M")
+                    {
+                        rbtnM.Checked = true;
+                    }
+                    else if (row["Gender"].ToString() == "F")
+                    {
+                        rbtnF.Checked = true;
+                    }
+
+                    string[] hobbies = row["Hobbies"].ToString().Split(' ');
+                    chk1.Checked = hobbies.Contains(chk1.Text);
+                    chk2.Checked = hobbies.Contains(chk2.Text);
+                    chk3.Checked = hobbies.Contains(chk3.Text);
+
+                    string[] skills = row["Skills"].ToString().Split(',');
+                    foreach (ListItem item in CheckBoxList1.Items)
+                    {
+                        item.Selected = skills.Contains(item.Text);
+                    }
+
+                    ViewState["UserID"] = userID;
+                    btnUpdate.Visible = true;
+                    btnCancel.Visible = true;
+                    btnSubmit.Visible = false;
+                }
+            }
+        }
+
+        private void DeleteUser(int userId)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("DeleteUser", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@UserID", userId);
+                        cmd.Parameters.AddWithValue("@Unname", Session["UserName"].ToString());
+                        con.Open();
+                        int result = cmd.ExecuteNonQuery();
+                        if (result > 0)
+                        {
+                            Response.Write("<script>alert('User deleted successfully!')</script>");
+                            ClearForm();
+                            GetAllData();
+                        }
+                        else
+                        {
+                            Response.Write("<script>alert('Deletion failed. Please try again.')</script>");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Response.Write("<script>alert('Error: " + ex.Message + "')</script>");
+            }
+        }
+
+        protected void btnUpdate_Click1(object sender, EventArgs e)
+        {
+            try
+            {
+                if (ViewState["UserID"] == null || Session["UserID"] == null || Session["UserName"] == null)
+                {
+                    Response.Write("<script>alert('UserID or UserName is not set.')</script>");
+                    return;
+                }
+
+                int userId = Convert.ToInt32(ViewState["UserID"]);
+                int modifyUID = Convert.ToInt32(Session["UserID"]);
+
+                // Retrieve existing image paths
+                string existingImagePaths = GetExistingImagePaths(userId);
+                List<string> imagePaths = new List<string>();
+
+                if (fileUploadImage.HasFiles)
+                {
+                    foreach (HttpPostedFile uploadedFile in fileUploadImage.PostedFiles)
+                    {
+                        string fileExtension = Path.GetExtension(uploadedFile.FileName).ToLower();
+
+                        if (fileExtension != ".jpg" && fileExtension != ".jpeg" && fileExtension != ".png" && fileExtension != ".gif")
+                        {
+                            lblResult.Text = "Invalid file type. Only .jpg, .jpeg, .png, and .gif are allowed.";
+                            lblResult.Visible = true;
+                            return;
+                        }
+
+                        if (uploadedFile.ContentLength > 2 * 1024 * 1024)
+                        {
+                            lblResult.Text = "File size exceeds the 2 MB limit.";
+                            lblResult.Visible = true;
+                            return;
+                        }
+                        string fileName = Path.GetFileName(uploadedFile.FileName);
+                        string imagePath = "~/Images/" + fileName;
+                        uploadedFile.SaveAs(Server.MapPath(imagePath));
+                        imagePaths.Add(imagePath);
+                    }
+                }
+
+                string imagePathsString = string.Join(",", imagePaths);
+                string finalImagePaths = string.IsNullOrEmpty(imagePathsString) ? existingImagePaths : imagePathsString;
+
+                List<string> selectedSkills = CheckBoxList1.Items.Cast<ListItem>()
+                                                                  .Where(li => li.Selected)
+                                                                  .Select(li => li.Text)
+                                                                  .ToList();
+                string selectedSkillsString = string.Join(",", selectedSkills);
+
+                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("UpdateUser", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.AddWithValue("@UserID", userId);
+                        cmd.Parameters.AddWithValue("@FirstName", txtFirstName.Text.Trim());
+                        cmd.Parameters.AddWithValue("@LastName", txtLastName.Text.Trim());
+                        cmd.Parameters.AddWithValue("@UserName", txtUname.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Email", txtEmail.Text.Trim());
+                        cmd.Parameters.AddWithValue("@Mobile", txtMob.Text.Trim());
+
+                        string gender = rbtnM.Checked ? "M" : (rbtnF.Checked ? "F" : "");
+                        cmd.Parameters.AddWithValue("@Gender", gender);
+
+                        cmd.Parameters.AddWithValue("@Age", int.TryParse(txtAge.Text.Trim(), out int age) ? (object)age : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@Course", DropDownList1.SelectedItem.Text);
+
+                        string hobbies = (chk1.Checked ? chk1.Text + " " : "") +
+                                         (chk2.Checked ? chk2.Text + " " : "") +
+                                         (chk3.Checked ? chk3.Text + " " : "");
+                        cmd.Parameters.AddWithValue("@Hobbies", hobbies.Trim());
+
+                        cmd.Parameters.AddWithValue("@Address", txtAddress.Text.Trim());
+
+                        cmd.Parameters.AddWithValue("@ImagePaths", string.IsNullOrEmpty(finalImagePaths) ? (object)DBNull.Value : finalImagePaths);
+                        cmd.Parameters.AddWithValue("@Skills", selectedSkillsString);
+                        cmd.Parameters.AddWithValue("@Unname", Session["UserName"].ToString());
+                        cmd.Parameters.AddWithValue("@ModifyUID", modifyUID);
+                        cmd.Parameters.AddWithValue("@ModifyDT", DateTime.Now);
+
+                        SqlParameter returnValue = new SqlParameter
+                        {
+                            ParameterName = "@ReturnValue",
+                            SqlDbType = SqlDbType.Int,
+                            Direction = ParameterDirection.ReturnValue
+                        };
+                        cmd.Parameters.Add(returnValue);
+
+                        cmd.ExecuteNonQuery();
+
+                        int result = (int)returnValue.Value;
+                        if (result == 1)
+                        {
+                            Response.Write("<script>alert('User updated successfully!')</script>");
+                            ClearForm();
+                            btnSubmit.Visible = true;
+                            btnCancel.Visible = true;
+                            btnUpdate.Visible = false;
+                            btnClear.Visible = false;
+                        }
+                        else if (result == 2)
+                        {
+                            Response.Write("<script>alert('Duplicate Email found. Please use a different email address.')</script>");
+                        }
+                        else if (result == 3)
+                        {
+                            Response.Write("<script>alert('Duplicate Mobile number found. Please use a different mobile number.')</script>");
+                        }
+                        else if (result == 4)
+                        {
+                            Response.Write("<script>alert('Duplicate User name found. Please use a different User name.')</script>");
+                        }
+                        else
+                        {
+                            Response.Write("<script>alert('Something went wrong, try again.')</script>");
+                        }
+
+                        lblResult.Visible = true;
+
+                        ClearForm();
+                        GetAllData();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                lblResult.Text = "Error: " + ex.Message;
+                lblResult.Visible = true;
+            }
+        }
+
+        private string GetExistingImagePaths(int userID)
+        {
+            string existingImagePaths = string.Empty;
+            using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("GetExistingImagePaths", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@UserID", userID);
+                    con.Open();
+                    existingImagePaths = cmd.ExecuteScalar()?.ToString() ?? string.Empty;
+                }
+            }
+            return existingImagePaths;
+        }
+
+
+
+        private void ClearForm()
+        {
+            txtFirstName.Text = string.Empty;
+            txtLastName.Text = string.Empty;
+            txtUname.Text = string.Empty;
+            txtPass.Text = string.Empty;
+            txtEmail.Text = string.Empty;
+            txtMob.Text = string.Empty;
+            txtAge.Text = string.Empty;
+            txtAddress.Text = string.Empty;
+
+            rbtnM.Checked = false;
+            rbtnF.Checked = false;
+
+            chk1.Checked = false;
+            chk2.Checked = false;
+            chk3.Checked = false;
+
+            if (DropDownList1.Items.Count > 0)
+            {
+                DropDownList1.SelectedIndex = 0;
+            }
+
+            foreach (ListItem item in CheckBoxList1.Items)
+            {
+                item.Selected = false;
+            }
+
+            ResetDropdown(DropDownList1);
+        }
+
+        private void ResetDropdown(DropDownList ddl)
+        {
+            if (ddl.Items.Count > 0)
+            {
+                ddl.SelectedIndex = 0;
+            }
+        }
+
+        protected void btnLogout_Click(object sender, EventArgs e)
+        {
+            Session.Clear();
+            FormsAuthentication.SignOut();
+            Response.Redirect("LoginPage.aspx");
+        }
+
+        protected void btnClear_Click(object sender, EventArgs e)
+        {
+            ClearForm();
+        }
+
+        protected void btnCancel_Click(object sender, EventArgs e)
+        {
+            ClearForm();
+        }
+
+        protected string BindImages(object dataItem)
+        {
+            DataRowView rowView = (DataRowView)dataItem;
+            string imagePathsString = rowView["ImagePath"].ToString();
+            string[] imagePaths = imagePathsString.Split(',');
+
+            StringBuilder html = new StringBuilder();
+
+            foreach (string path in imagePaths)
+            {
+                if (!string.IsNullOrWhiteSpace(path))
+                {
+                    string resolvedUrl = ResolveUrl(path);
+                    html.Append($"<img src='{resolvedUrl}' width='100px' height='100px' style='margin-right:5px;' alt='Profile Image' />");
+                }
+            }
+            return html.ToString();
+        }
+
+        protected void btnLogIn_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("LoginPage.aspx");
+        }
+
+        //protected void SubmitButton_Click1(object sender, EventArgs e)
+        //{
+        //    string selectedSkills = string.Empty;
+        //    foreach (ListItem item in CheckBoxList1.Items)
+        //    {
+        //        if (item.Selected)
+        //        {
+        //            selectedSkills += item.Text + ", ";
+        //        }
+        //    }
+        //    if (selectedSkills.Length > 0)
+        //    {
+        //        selectedSkills = selectedSkills.Substring(0, selectedSkills.Length - 2);
+        //    }
+        //    lblResult.Text = "Selected Skills: " + selectedSkills;
+        //    lblResult.Visible = true;
+        //}
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="LoginPage.aspx.cs" Inherits="RegistrationForm.LoginPage" %>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>Login Page</title>
+</head>
+<body>
+    <form id="form1" runat="server" >
+        <table style="margin:auto">
+            <tr>
+                <td><asp:Label ID="lbl1" runat="server" Text="Email/Mobile No.: "></asp:Label></td>
+                <td><asp:TextBox ID="txtUMob" runat="server"></asp:TextBox></td>
+            </tr>
+            <tr>
+                <td><asp:Label ID="lbl2" runat="server" Text="Password: "></asp:Label></td>
+                <td><asp:TextBox ID="txtLPass" runat="server" TextMode="Password"></asp:TextBox></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <asp:Button ID="btnLogin" runat="server" Text="Login" OnClick="btnLogin_Click" />
+                    <asp:Button ID="btnRegister" runat="server" Text="Register" OnClick="btnRegister_Click" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <asp:Label ID="lblError" runat="server" Text=""></asp:Label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;" >
+                    <asp:Label ID="lblWelcome" runat="server" Text="" Visible="False"></asp:Label>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+using System;
+using System.Configuration;
+using System.Data.SqlClient;
+using System.Web.Security;
+using System.Web.UI;
+
+namespace RegistrationForm
+{
+    public partial class LoginPage : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+        }
+
+        protected void btnRegister_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("RegistrationPage.aspx");
+        }
+
+        protected void btnLogin_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string UMob = txtUMob.Text.Trim();
+                string Pass = txtLPass.Text.Trim();
+
+                string connectionString = ConfigurationManager.ConnectionStrings["RegistrationConnectionString"].ConnectionString;
+
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    string query = "SELECT UserID, UserName, CreateUID, CreateDT FROM RegistrationDetails WHERE (Email = @UMob OR UserName = @UMob OR Mobile = @UMob) AND Password = @Pass";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@UMob", UMob);
+                        cmd.Parameters.AddWithValue("@Pass", Pass);
+
+                        con.Open();
+                        SqlDataReader reader = cmd.ExecuteReader();
+
+                        if (reader.Read())
+                        {
+                            Session["UserID"] = reader["UserID"];
+                            Session["UserName"] = reader["UserName"];
+                            Session["CreateUID"] = reader["CreateUID"];
+                            Session["CreateDT"] = reader["CreateDT"];
+
+                            FormsAuthentication.SetAuthCookie(UMob, false);
+                            Response.Redirect("RegistrationPage.aspx");
+                        }
+                        else
+                        {
+                            lblError.Text = "Invalid username or password.";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                lblError.Text = "An error occurred: " + ex.Message;
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  For more information on how to configure your ASP.NET application, please visit
+  https://go.microsoft.com/fwlink/?LinkId=169433
+  -->
+<configuration>
+	<connectionStrings>
+		<add name="RegistrationConnectionString"
+			 connectionString="Data Source=LAPTOP-IQJFRJ8F;Initial Catalog=Registration;Integrated Security=True;"
+			 providerName="System.Data.SqlClient" />
+	</connectionStrings>
+  <system.web>
+    <compilation debug="true" targetFramework="4.7.2" />
+    <httpRuntime targetFramework="4.7.2" />
+	  <authentication mode="Forms">
+		  <forms loginUrl="LoginPage.aspx"/>
+	  </authentication>
+	  <authorization>
+		  <allow users="*"/>
+	  </authorization>
+  </system.web>
+  <system.codedom>
+    <compilers>
+      <compiler language="c#;cs;csharp" extension=".cs" type="Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider, Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" warningLevel="4" compilerOptions="/langversion:default /nowarn:1659;1699;1701" />
+      <compiler language="vb;vbs;visualbasic;vbscript" extension=".vb" type="Microsoft.CodeDom.Providers.DotNetCompilerPlatform.VBCodeProvider, Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" warningLevel="4" compilerOptions="/langversion:default /nowarn:41008 /define:_MYTYPE=\&quot;Web\&quot; /optionInfer+" />
+    </compilers>
+  </system.codedom>
+</configuration>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+USE [Registration]
+GO
+/****** Object:  StoredProcedure [dbo].[InsertRegistrationDetails]    Script Date: 24-08-2024 16:28:12 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[InsertRegistrationDetails]
+    @FirstName NVARCHAR(50),
+    @LastName NVARCHAR(50),
+    @UserName NVARCHAR(50),
+    @Password NVARCHAR(50),
+    @Email NVARCHAR(100),
+    @Mobile NVARCHAR(15),
+    @Gender CHAR(1),
+    @Age INT,
+    @Course NVARCHAR(50),
+    @Hobbies NVARCHAR(100),
+    @Address NVARCHAR(250), 
+	@Skills NVARCHAR(MAX),
+	@ImagePaths NVARCHAR(MAX),
+    @CreateDT DateTime,
+    @Unname VARCHAR(100) = 'yes'
+AS
+BEGIN
+    -- Check for duplicate email
+    IF EXISTS (SELECT 1 FROM dbo.RegistrationDetails WHERE Email = @Email)
+    BEGIN
+        RETURN 2 -- Duplicate email
+    END
+
+    -- Check for duplicate mobile
+    IF EXISTS (SELECT 1 FROM dbo.RegistrationDetails WHERE Mobile = @Mobile)
+    BEGIN
+        RETURN 3 -- Duplicate mobile
+    END
+
+    -- Check for duplicate username
+    IF EXISTS (SELECT 1 FROM dbo.RegistrationDetails WHERE UserName = @UserName)
+    BEGIN
+        RETURN 4 -- Duplicate username
+    END
+
+    INSERT INTO dbo.RegistrationDetails (
+        FirstName, LastName, UserName, Password, Email, Mobile, Gender, 
+        Age, Course, Hobbies, Address, CreateUID, CreateDT, ImagePath, Skills)
+    VALUES (
+        @FirstName, @LastName, @UserName, @Password, @Email, @Mobile, @Gender, 
+        @Age, @Course, @Hobbies, @Address, NULL, GETDATE(), @ImagePaths,@Skills)
+
+    IF @Unname = 'yes'
+    BEGIN
+        -- Set CreateUID to the ID of the record just inserted (SCOPE_IDENTITY)
+        UPDATE dbo.RegistrationDetails
+        SET CreateUID = SCOPE_IDENTITY()
+        WHERE UserID = SCOPE_IDENTITY()
+    END
+    ELSE
+    BEGIN
+        -- Set CreateUID to the UserID of the provided @Unname
+        UPDATE dbo.RegistrationDetails
+        SET CreateUID = (SELECT UserID FROM dbo.RegistrationDetails WHERE UserName = @Unname)
+        WHERE UserID = SCOPE_IDENTITY()
+    END
+
+    RETURN 1 -- Success
+END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+USE [Registration]
+GO
+/****** Object:  StoredProcedure [dbo].[UpdateUser]    Script Date: 24-08-2024 15:39:08 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[UpdateUser]
+    @UserID INT,
+    @FirstName NVARCHAR(50),
+    @LastName NVARCHAR(50),
+    @UserName NVARCHAR(50),
+    @Email NVARCHAR(100),
+    @Mobile NVARCHAR(15),
+    @Gender CHAR(1),
+    @Age INT,
+    @Course NVARCHAR(50),
+    @Hobbies NVARCHAR(100),
+    @Address NVARCHAR(250),
+    @ImagePaths NVARCHAR(MAX),
+	@Skills NVARCHAR(MAX),
+    @Unname VARCHAR(100) = 'yes',
+    @ModifyUID INT,
+    @ModifyDT DATETIME
+AS
+BEGIN
+    -- Check if the email already exists for a different user
+    IF EXISTS (SELECT 1 FROM RegistrationDetails WHERE Email = @Email AND UserID != @UserID)
+    BEGIN
+        RETURN 2
+    END
+
+    -- Check if the mobile number already exists for a different user
+    IF EXISTS (SELECT 1 FROM RegistrationDetails WHERE Mobile = @Mobile AND UserID != @UserID)
+    BEGIN
+        RETURN 3
+    END
+
+    -- Update the user details
+    UPDATE RegistrationDetails
+    SET FirstName = @FirstName,
+        LastName = @LastName,
+        UserName = @UserName,
+        Email = @Email,
+        Mobile = @Mobile,
+        Gender = @Gender,
+        Age = @Age,
+        Course = @Course,
+        Hobbies = @Hobbies,
+        Address = @Address,
+        ImagePath = @ImagePaths,
+		Skills = @Skills,
+        ModifyUID = @ModifyUID,
+        ModifyDT = @ModifyDT
+    WHERE UserID = @UserID;
+
+    RETURN 1
+END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+USE [Registration]
+GO
+/****** Object:  StoredProcedure [dbo].[DeleteUSer]    Script Date: 24-08-2024 16:28:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROCEDURE [dbo].[DeleteUSer]
+    @UserID INT,
+	@Unname Varchar(100)
+   
+AS
+BEGIN
+    UPDATE [dbo].[RegistrationDetails]
+	SET DeleteUID = (SELECT UserID FROM dbo.RegistrationDetails WHERE UserName = @Unname),
+        DeleteDT = GETDATE()
+    WHERE UserID = @UserID
+
+END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+USE [Registration]
+GO
+/****** Object:  StoredProcedure [dbo].[GetAllData]    Script Date: 24-08-2024 16:28:54 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetAllData]  
+AS   
+BEGIN   
+    SELECT * FROM RegistrationDetails  where DeleteUID is null
+END;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+USE [Registration]
+GO
+/****** Object:  StoredProcedure [dbo].[GetUserData]    Script Date: 24-08-2024 16:29:05 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetUserData]  
+    @UserID INT  
+AS  
+BEGIN  
+    -- Select all columns from the Users table where UserID matches the provided ID  
+    SELECT   
+        [UserID],  
+        FirstName,  
+        LastName,  
+        UserName,  
+        Email,  
+        Mobile,  
+        Gender,  
+        Age,  
+        Course,  
+        Hobbies,  
+        Address,  
+        CreateUID,  
+        CreateDT,  
+        ModifyUID,  
+        ModifyDT,
+		ImagePath,
+		Skills
+    FROM   
+     RegistrationDetails  
+    WHERE   
+        UserID = @UserID  ;  
+END  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+USE [Registration]
+GO
+/****** Object:  StoredProcedure [dbo].[GetExistingImagePaths]    Script Date: 24-08-2024 16:29:16 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetExistingImagePaths]
+@UserID INT
+AS
+BEGIN
+    SELECT ImagePath
+    FROM RegistrationDetails
+    WHERE UserID = @UserID;
+END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
